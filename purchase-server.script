@@ -1,5 +1,0 @@
-serverName = args[0];
-serverRam = args[1];
-
-response = purchaseServer(serverName,serverRam);
-print(response);
