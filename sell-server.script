@@ -1,0 +1,2 @@
+serverName = args[0];
+deleteServer(serverName);
