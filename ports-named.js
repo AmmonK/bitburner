@@ -1,5 +1,5 @@
 /** @param {NS} ns **/
-import { openPorts } from "open-ports.ns"
+import { openPorts } from "open-ports.js"
 
 export async function main(ns) {  
 
