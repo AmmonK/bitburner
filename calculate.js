@@ -1,11 +1,46 @@
 /** @param {NS} ns **/
-export async function main(ns) {
+export async function calculateScripts(ns,serverRam) {
 
 	let hostName = ns.getHostname();
 
 	let totalRam = await ns.getServerMaxRam(hostName);
+	if(serverRam){
+		totalRam = serverRam;
+	}
 
-	let growCost = await ns.getScriptRam("grow.ns",hostName);
+	let growCost = await ns.getScriptRam("grow.js",hostName);
+	let growThreads = Math.floor((totalRam / 2) / growCost);
+	let growRam = growCost * growThreads;
+
+	let hackCost = await ns.getScriptRam("hack.js",hostName);
+	let hackThreads = Math.floor((totalRam / 5) / hackCost);
+	let hackRam = hackCost * hackThreads;
+
+	let weakenCost = await ns.getScriptRam("weaken.js",hostName);
+	let weakenThreads = Math.floor((totalRam - growRam - hackRam)/weakenCost);
+	let weakenRam = weakenCost * weakenThreads;
+
+	// 30% weaken
+
+
+	return {
+		grow: growThreads,
+		hack: hackThreads,
+		weaken: weakenThreads,
+	}
+
+}
+
+export async function calculateScriptsOutput(ns){
+	
+	let hostName = ns.getHostname();
+
+	let totalRam = await ns.getServerMaxRam(hostName);
+	if(ns.args[0]){
+		totalRam = ns.args[0];
+	}
+
+	let growCost = await ns.getScriptRam("grow.js",hostName);
 	let growThreads = Math.floor((totalRam / 2) / growCost);
 	let growRam = growCost * growThreads;
 
@@ -16,7 +51,7 @@ export async function main(ns) {
 	ns.tprint("Grow Ram: ",growRam);	
 
 
-	let hackCost = await ns.getScriptRam("hack.ns",hostName);
+	let hackCost = await ns.getScriptRam("hack.js",hostName);
 	let hackThreads = Math.floor((totalRam / 5) / hackCost);
 	let hackRam = hackCost * hackThreads;
 
@@ -27,7 +62,7 @@ export async function main(ns) {
 	ns.tprint("Hack Ram: ", hackRam);
 
 
-	let weakenCost = await ns.getScriptRam("weaken.ns",hostName);
+	let weakenCost = await ns.getScriptRam("weaken.js",hostName);
 	let weakenThreads = Math.floor((totalRam - growRam - hackRam)/weakenCost);
 	let weakenRam = weakenCost * weakenThreads;
 
@@ -41,4 +76,13 @@ export async function main(ns) {
 	ns.tprint("Total Cost Ram: ",growRam + hackRam + weakenRam);
 	ns.tprint("Total Avail Ram: ", totalRam);
 
+	return {
+		grow: growThreads,
+		hack: hackThreads,
+		weaken: weakenThreads,
+	}
+}
+
+export async function main(ns){
+	calculateScriptsOutput(ns);
 }

@@ -5,5 +5,3 @@ export async function main(ns) {
   ns.deleteServer(serverName);
 
 }
-
-
