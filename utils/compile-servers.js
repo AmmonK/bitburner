@@ -2,7 +2,7 @@
 import { getServers } from 'get-servers';
 import { serverDetails} from 'server-details';
 
-export async function main(ns) {
+export async function compileServers(ns) {
 
 	// get list of all known servers
 	let servers = await getServers(ns);
@@ -15,13 +15,11 @@ export async function main(ns) {
 		compiledList.push(details);
 	}
 
-	//ns.tprint(compiledList);
+	return compiledList;
 
-	let withRoot = compiledList.filter(x => x.hasRoot);
-	let withMoney = compiledList.filter( x => x.money > 0);
-	ns.tprint("root: ",withRoot.length);
-	ns.tprint("money: ",withMoney.length);
-	ns.tprint(compiledList[10]);
+}
 
-
+export async function main(ns){
+	let result = await compileServers(ns);
+	ns.tprint(result);
 }
