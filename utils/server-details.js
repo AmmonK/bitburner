@@ -1,15 +1,19 @@
 /** @param {NS} ns **/
-export async function serverDetails(ns) {
+import { getServerPath } from 'find-server.js';
 
-	let server = ns.args[0];	
+export async function serverDetails(ns, serverName) {
+
+	let server = serverName;	
 	let maxMoney = await ns.getServerMaxMoney(server);
 	let minSecurity = await ns.getServerMinSecurityLevel(server);
 	let portsRequired = await ns.getServerNumPortsRequired(server);
-	let growTime = ns.getGrowTime(server);
-	let weakTime = ns.getWeakenTime(server);
-	let hackTime = ns.getHackTime(server);
-	let hackLevel = ns.getServerRequiredHackingLevel(server);
-	let hasRoot = ns.hasRootAccess(server);
+	let growTime = await ns.getGrowTime(server);
+	let weakTime = await ns.getWeakenTime(server);
+	let hackTime = await ns.getHackTime(server);
+	let hackLevel = await ns.getServerRequiredHackingLevel(server);
+	let hasRoot = await ns.hasRootAccess(server);
+	let money = await ns.getServerMoneyAvailable(server);
+	let serverPath = await getServerPath(ns,serverName);
 
 	let response = {
 		name: server,
@@ -20,8 +24,9 @@ export async function serverDetails(ns) {
 		weakenTime: weakTime,
 		hackTime: hackTime,
 		hackLevel: hackLevel,
-		hasRoot: hasRoot
-
+		hasRoot: hasRoot,
+		money: money,
+		path: serverPath,
 	}
 
 	return response;
