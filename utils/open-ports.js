@@ -1,40 +1,42 @@
 /** @param {NS} ns **/
+import { serverDetails } from 'server-details';
+
+export async function main(ns){
+  let result = openPorts(ns,ns.args[0]);
+  ns.tprint(result);
+  return result;
+}
+
 export async function openPorts(ns,host) {  
-  if(host == "darkweb") return;
-  if(host.includes("bot-")) return;
 
   ns.tprint(host);
-  const numPorts = ns.getServerNumPortsRequired(host);
-  ns.tprint("ports needed: ",numPorts);
 
-  if(numPorts >= 1) {
-    if(ns.fileExists("BruteSSH.exe","home"))
-	{
-	  ns.tprint("→SSH:[",ns.brutessh(host)?"O":"C","]");
-	}
+  let details = await serverDetails(ns,host);
+
+  if(!details.sshOpenPorts && ns.fileExists("BruteSSH.exe","home")){
+    await ns.brutessh(host);
   }
-  if(numPorts >= 2) {
-    if(ns.fileExists("FTPCrack.exe","home")){
-	  ns.tprint("→FTP:[",ns.ftpcrack(host)?"O":"C","]");
-	}
+
+  if(!details.ftpPortOpen && ns.fileExists("FTPCrack.exe","home")){
+    await ns.ftpcrack(host);
   }
-  if(numPorts >= 3) {
-    if(ns.fileExists("relaySMTP.exe","home")){
-      ns.tprint("→FTP:[",ns.relaysmtp(host)?"O":"C","]");
-    }
+
+  if(!details.smtpPortOpen && ns.fileExists("relaySMTP.exe","home")){
+    await ns.relaysmtp(host);
   }
-  if(numPorts >= 4) {
-    if(ns.fileExists("HTTPWorm.exe","home")){
-      ns.tprint("→HTTP:[",ns.httpworm(host)?"O":"C","]");
-    }
+
+  if(!details.httpPortOpen && ns.fileExists("HTTPWorm.exe","home")){
+    await ns.httpworm(host)
   }
-  if(numPorts >= 5) {
-    if(ns.fileExists("SQLInject.exe","home")){
-      ns.tprint("→SQL:[",ns.sqlinject(host)?"O":"C","]");
-    }
+
+  if(!details.sqlPortOpen && ns.fileExists("SQLInject.exe","home")){
+    await ns.sqlinject(host)
   }
-  if(!ns.hasRootAccess(host)) {
-    ns.tprint("→NUKE:[",ns.nuke(host)?"O":"C","]");
+
+  if(!details.hasAdminRights){
+    await ns.nuke(host);
   }
-  ns.tprint("→BACKDOOR:[",ns.exec("backdoor",host),"]");	
+
+
+
 }
