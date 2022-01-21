@@ -11,8 +11,8 @@ export async function main(ns) {
 
 	// open ports on servers and nuke
 	for(let server of serverList){
-		if(!server.hasAdminRights){
-			ns.tprint("open ports on : ", server.name);			
+		if(!server.hasAdminRights && server.requiredHackingSkill <= ns.getHackingLevel()){
+			ns.tprint("open ports on : ", server.name, " requires ", server.numOpenPortsRequired);			
 			await openPorts(ns,server.name);
 		}
 	}
@@ -22,11 +22,23 @@ export async function main(ns) {
 	// see if we have a bot for the server
 	for(let server of serverList){
 		let botServerPresent = await hasBotServer(ns,server.name);		
-		if(server.hasAdminRights && !botServerPresent){
+		if(server.hasAdminRights && !botServerPresent && server.moneyMax > 0){
 			// needs bot
+			ns.tprint("attempting bot: ",server.name);
 			let botMade = await setupServer(ns,server.name)
+			ns.tprint("bot made: ",botMade);
 		}
 	}
+
+	for(let server of serverList){
+		let botServerPresent = await hasBotServer(ns,server.name);	
+		let attackRunning = await ns.isRunning("attackServer.js","home",server.name)
+		if(botServerPresent && !attackRunning){
+			// run attack
+			await ns.exec("attackServer.js","home",1,server.name);
+		}
+	}
+
 
 
 }
