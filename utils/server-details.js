@@ -9,9 +9,9 @@ export async function serverDetails(ns, serverName) {
 	return{
 		name: serverName,
 		...server,
-		path: serverPath
+		path: serverPath,
+		connectPath: "connect " + serverPath.join(";connect ")
 	}
-
 
 }
 
