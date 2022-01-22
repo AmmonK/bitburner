@@ -6,7 +6,7 @@ export async function main(ns){
 	let maxRam = ns.getServerMaxRam(botName);
 	
 	let numHackThreads = maxRam / ns.getScriptRam("min-hack.js",botName);
-	if(numHhackThreads < 1) numHackThreads = 1;
+	if(numHackThreads < 1) numHackThreads = 1;
 	let numGrowThreads = maxRam / ns.getScriptRam("min-grow.js",botName);
 	if (numGrowThreads < 1) numGrowThreads = 1;
 	let numWeakThreads = maxRam / ns.getScriptRam("min-weak.js",botName);	
