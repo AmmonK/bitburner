@@ -10,15 +10,18 @@ export async function main(ns) {
 	let serverList = await compileServers(ns);
 
 	// open ports on servers and nuke
-	for(let server of serverList){
-		if(!server.hasAdminRights && server.requiredHackingSkill <= ns.getHackingLevel()){
-			ns.tprint("open ports on : ", server.name, " requires ", server.numOpenPortsRequired);			
-			await openPorts(ns,server.name);
+	for(let server of serverList){		
+		if(!server.hasAdminRights && server.requiredHackingSkill <= ns.getHackingLevel()){			
+			if(server.numOpenPortsRequired > server.openPortCount){
+				ns.tprint("open ports on : ", server.name, ", [",server.openPortCount,"] open of [",  server.numOpenPortsRequired,"]");			
+				await openPorts(ns,server.name);
+			}
 		}
 	}
 
 	// get updated server information
 	serverList = await compileServers(ns);
+	
 	// see if we have a bot for the server
 	for(let server of serverList){
 		let botServerPresent = await hasBotServer(ns,server.name);		
@@ -47,3 +50,4 @@ async function hasBotServer(ns,serverName){
 	let botName = `bot-${serverName}`;
 	return serverExists(ns,botName);
 }
+
